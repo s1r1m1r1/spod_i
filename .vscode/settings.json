@@ -1,0 +1,44 @@
+{
+    // вложенность файлов
+    "explorer.fileNesting.patterns": {
+        "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata,devtools_options.yaml,analysis_options.yaml,.tool-versions,",
+    },
+    // видимоcть файлов
+    "files.exclude": {
+        "i_minipod/**": true,
+        // ".dart_tool/**": true,
+        // ".git/**": true,
+        // "assets/**": false,
+        // "android/**": true,
+        // "ios/**": true,
+        // "web/**": true,
+        // "macos/**": true,
+        // "test/**": true,
+        // "shaders/**": false,
+        // "packages/**": true,
+        // "lib/domain/**": false,
+        // "lib/generated/**": true,
+        // "lib/l10n/**": true,
+    },
+    // "cSpell.dictionaries": [
+    //     "dart",
+    // ],
+    //install extension Russian - Code Spell Checker
+    // "cSpell.language": "en,ru",
+    // "cSpell.words": [
+    //     "anketa",
+    //     "Anketas",
+    //     "cifra",
+    //     "Fillsurvey",
+    //     "Loginby",
+    //     "phonenumber",
+    //     "placemarks",
+    //     "sinch",
+    //     "Usernot"
+    // ],
+    // "cSpell.ignorePaths": [
+    //     "vscode-extension", //
+    //     ".git",
+    //     "g.dart"
+    // ],
+}

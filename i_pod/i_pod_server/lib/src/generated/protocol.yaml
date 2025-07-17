@@ -1,5 +1,12 @@
-greeting:
-  - hello:
+admin:
+  - listUsers:
+  - blockUser:
+  - unblockUser:
+  - triggerDeletedRecipeCleanup:
+  - scheduleDeletedRecipeCleanup:
+  - stopCleanupTask:
 recipes:
   - generateRecipe:
   - getRecipes:
+  - deleteRecipe:
+  - generateRecipe2:

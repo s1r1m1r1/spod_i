@@ -4,6 +4,7 @@ import 'package:i_pod_client/i_pod_client.dart';
 import '../../admin/view/admin_page.dart';
 import '../../login/view/login_page.dart';
 import '../../main.dart';
+import '../widgets/image_widgets.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -23,6 +24,7 @@ class MyHomePageState extends State<MyHomePage> {
   /// Holds the last error message that we've received from the server or null if no
   /// error exists yet.
   String? _errorMessage;
+  String? _imagePath;
 
   final _textEditingController = TextEditingController();
 
@@ -35,14 +37,17 @@ class MyHomePageState extends State<MyHomePage> {
         _recipe = null;
         _loading = true;
       });
-      final result =
-          await client.recipes.generateRecipe(_textEditingController.text);
+      await for (final result in client.recipes
+          .generateRecipe2(_textEditingController.text, _imagePath)) {
+        setState(() {
+          _errorMessage = null;
+          _recipe = result;
+        });
+      }
+
       setState(() {
-        _errorMessage = null;
-        _recipe = result;
         _loading = false;
-        if (_recipeHistory.isEmpty) _recipeHistory.add(result);
-        _recipeHistory.insert(0, result);
+        if (_recipe != null) _recipeHistory.insert(0, _recipe!);
       });
     } catch (e) {
       setState(() {
@@ -162,6 +167,15 @@ class MyHomePageState extends State<MyHomePage> {
                         hintText: 'Enter your ingredients',
                       ),
                     ),
+                  ),
+                  ImageUploadButton(
+                    key: ValueKey(_imagePath),
+                    onImagePathChanged: (imagePath) {
+                      setState(() {
+                        _imagePath = imagePath;
+                      });
+                    },
+                    imagePath: _imagePath,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),

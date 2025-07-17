@@ -19,6 +19,7 @@ abstract class Recipe implements _i1.SerializableModel {
     required this.text,
     required this.date,
     required this.ingredients,
+    this.imagePath,
   });
 
   factory Recipe({
@@ -27,6 +28,7 @@ abstract class Recipe implements _i1.SerializableModel {
     required String text,
     required DateTime date,
     required String ingredients,
+    String? imagePath,
   }) = _RecipeImpl;
 
   factory Recipe.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,6 +38,7 @@ abstract class Recipe implements _i1.SerializableModel {
       text: jsonSerialization['text'] as String,
       date: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['date']),
       ingredients: jsonSerialization['ingredients'] as String,
+      imagePath: jsonSerialization['imagePath'] as String?,
     );
   }
 
@@ -56,6 +59,9 @@ abstract class Recipe implements _i1.SerializableModel {
   /// The ingredients the user has passed in
   String ingredients;
 
+  /// Image path of the user upload
+  String? imagePath;
+
   /// Returns a shallow copy of this [Recipe]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -65,6 +71,7 @@ abstract class Recipe implements _i1.SerializableModel {
     String? text,
     DateTime? date,
     String? ingredients,
+    String? imagePath,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,6 +81,7 @@ abstract class Recipe implements _i1.SerializableModel {
       'text': text,
       'date': date.toJson(),
       'ingredients': ingredients,
+      if (imagePath != null) 'imagePath': imagePath,
     };
   }
 
@@ -92,12 +100,14 @@ class _RecipeImpl extends Recipe {
     required String text,
     required DateTime date,
     required String ingredients,
+    String? imagePath,
   }) : super._(
           id: id,
           author: author,
           text: text,
           date: date,
           ingredients: ingredients,
+          imagePath: imagePath,
         );
 
   /// Returns a shallow copy of this [Recipe]
@@ -110,6 +120,7 @@ class _RecipeImpl extends Recipe {
     String? text,
     DateTime? date,
     String? ingredients,
+    Object? imagePath = _Undefined,
   }) {
     return Recipe(
       id: id is int? ? id : this.id,
@@ -117,6 +128,7 @@ class _RecipeImpl extends Recipe {
       text: text ?? this.text,
       date: date ?? this.date,
       ingredients: ingredients ?? this.ingredients,
+      imagePath: imagePath is String? ? imagePath : this.imagePath,
     );
   }
 }

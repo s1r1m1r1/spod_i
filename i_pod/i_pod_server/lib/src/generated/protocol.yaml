@@ -6,7 +6,9 @@ admin:
   - scheduleDeletedRecipeCleanup:
   - stopCleanupTask:
 recipes:
-  - generateRecipe:
   - getRecipes:
   - deleteRecipe:
   - generateRecipe2:
+  - getUploadDescription:
+  - verifyUpload:
+  - getPublicUrlForPath:

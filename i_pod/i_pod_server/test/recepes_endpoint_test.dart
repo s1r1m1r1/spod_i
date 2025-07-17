@@ -1,3 +1,4 @@
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:i_pod_server/src/endpoints/recipes_endpoint.dart';
 import 'package:i_pod_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -23,7 +24,7 @@ void main() {
       final sessionBuilder = unAuthSessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(1, {}));
 
-      String capturedPrompt = '';
+      List<Content> capturedPrompt = [];
 
       generateContent = (_, prompt) {
         capturedPrompt = prompt;
@@ -31,9 +32,19 @@ void main() {
       };
 
       final recipe = await endpoints.recipes
-          .generateRecipe2(sessionBuilder, 'chicken, rice, broccoli');
+          .generateRecipe2(sessionBuilder, 'chicken, rice, broccoli')
+          .first;
       expect(recipe.text, 'Mock Recipe');
-      expect(capturedPrompt, contains('chicken, rice, broccoli'));
+      final capturedPromptString = capturedPrompt
+          .map((e) => e.parts
+              .map((part) => (part is TextPart) ? part.text : null)
+              .nonNulls
+              .toList()
+              .join(' ')
+              .trim())
+          .toList()
+          .join(' ');
+      expect(capturedPromptString, contains('chicken, rice, broccoli'));
     });
 
     test(
@@ -151,7 +162,8 @@ void main() {
         () async {
       await expectException(
         () => endpoints.recipes
-            .generateRecipe(unAuthSessionBuilder, 'chicken, rice, broccoli'),
+            .generateRecipe2(unAuthSessionBuilder, 'chicken, rice, broccoli')
+            .first,
         isA<ServerpodUnauthenticatedException>(),
       );
     });
@@ -163,6 +175,50 @@ void main() {
         () => endpoints.recipes.getRecipes(unAuthSessionBuilder),
         isA<ServerpodUnauthenticatedException>(),
       );
+    });
+
+    test('returns cached recipe if it exists', () async {
+      final sessionBuilder = unAuthSessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(1, {}));
+      final session = sessionBuilder.build();
+      await session.caches.local.clear();
+
+      List<Content> capturedPrompt = [];
+      final ingredients = 'chicken, rice, broccoli';
+
+      generateContent = (_, prompt) {
+        capturedPrompt = prompt;
+        return Future.value('Mock Recipe');
+      };
+
+      final recipe = await endpoints.recipes
+          .generateRecipe2(sessionBuilder, ingredients)
+          .first;
+      expect(recipe.text, 'Mock Recipe');
+      final capturedPromptString = capturedPrompt
+          .map((e) => e.parts
+              .map((part) => (part is TextPart) ? part.text : null)
+              .nonNulls
+              .toList()
+              .join(' ')
+              .trim())
+          .toList()
+          .join(' ');
+      expect(capturedPromptString, contains(ingredients));
+      final cache = await session.caches.local
+          .get<Recipe>('recipe-${ingredients.hashCode}-null');
+      expect(cache, isNotNull);
+      expect(cache?.text, 'Mock Recipe');
+
+      // reset
+      capturedPrompt = [];
+
+      // Call the endpoint again with the same ingredients
+      final recipe2 = await endpoints.recipes
+          .generateRecipe2(sessionBuilder, ingredients)
+          .first;
+      expect(recipe2.text, 'Mock Recipe');
+      expect(capturedPrompt, isEmpty);
     });
   });
 }

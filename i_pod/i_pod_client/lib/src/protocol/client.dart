@@ -71,13 +71,6 @@ class EndpointRecipes extends _i1.EndpointRef {
   @override
   String get name => 'recipes';
 
-  _i2.Future<_i4.Recipe> generateRecipe(String ingredients) =>
-      caller.callServerEndpoint<_i4.Recipe>(
-        'recipes',
-        'generateRecipe',
-        {'ingredients': ingredients},
-      );
-
   _i2.Future<List<_i4.Recipe>> getRecipes() =>
       caller.callServerEndpoint<List<_i4.Recipe>>(
         'recipes',
@@ -92,11 +85,38 @@ class EndpointRecipes extends _i1.EndpointRef {
         {'recipeId': recipeId},
       );
 
-  _i2.Future<_i4.Recipe> generateRecipe2(String ingredients) =>
-      caller.callServerEndpoint<_i4.Recipe>(
+  _i2.Stream<_i4.Recipe> generateRecipe2(
+    String ingredients, [
+    String? imagePath,
+  ]) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i4.Recipe>, _i4.Recipe>(
         'recipes',
         'generateRecipe2',
-        {'ingredients': ingredients},
+        {
+          'ingredients': ingredients,
+          'imagePath': imagePath,
+        },
+        {},
+      );
+
+  _i2.Future<(String?, String)> getUploadDescription(String filename) =>
+      caller.callServerEndpoint<(String?, String)>(
+        'recipes',
+        'getUploadDescription',
+        {'filename': filename},
+      );
+
+  _i2.Future<bool> verifyUpload(String path) => caller.callServerEndpoint<bool>(
+        'recipes',
+        'verifyUpload',
+        {'path': path},
+      );
+
+  _i2.Future<String> getPublicUrlForPath(String path) =>
+      caller.callServerEndpoint<String>(
+        'recipes',
+        'getPublicUrlForPath',
+        {'path': path},
       );
 }
 

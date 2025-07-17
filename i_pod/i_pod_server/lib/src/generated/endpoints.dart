@@ -10,17 +10,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../greeting_endpoint.dart' as _i2;
-import '../recipes/recipes_endpoint.dart' as _i3;
+import '../endpoints/admin_endpoint.dart' as _i2;
+import '../endpoints/recipes_endpoint.dart' as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'greeting': _i2.GreetingEndpoint()
+      'admin': _i2.AdminEndpoint()
         ..initialize(
           server,
-          'greeting',
+          'admin',
           null,
         ),
       'recipes': _i3.RecipesEndpoint()
@@ -30,16 +31,25 @@ class Endpoints extends _i1.EndpointDispatch {
           null,
         ),
     };
-    connectors['greeting'] = _i1.EndpointConnector(
-      name: 'greeting',
-      endpoint: endpoints['greeting']!,
+    connectors['admin'] = _i1.EndpointConnector(
+      name: 'admin',
+      endpoint: endpoints['admin']!,
       methodConnectors: {
-        'hello': _i1.MethodConnector(
-          name: 'hello',
+        'listUsers': _i1.MethodConnector(
+          name: 'listUsers',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint).listUsers(session),
+        ),
+        'blockUser': _i1.MethodConnector(
+          name: 'blockUser',
           params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
               nullable: false,
             )
           },
@@ -47,11 +57,59 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['greeting'] as _i2.GreetingEndpoint).hello(
+              (endpoints['admin'] as _i2.AdminEndpoint).blockUser(
             session,
-            params['name'],
+            params['userId'],
           ),
-        )
+        ),
+        'unblockUser': _i1.MethodConnector(
+          name: 'unblockUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint).unblockUser(
+            session,
+            params['userId'],
+          ),
+        ),
+        'triggerDeletedRecipeCleanup': _i1.MethodConnector(
+          name: 'triggerDeletedRecipeCleanup',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint)
+                  .triggerDeletedRecipeCleanup(session),
+        ),
+        'scheduleDeletedRecipeCleanup': _i1.MethodConnector(
+          name: 'scheduleDeletedRecipeCleanup',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint)
+                  .scheduleDeletedRecipeCleanup(session),
+        ),
+        'stopCleanupTask': _i1.MethodConnector(
+          name: 'stopCleanupTask',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint)
+                  .stopCleanupTask(session),
+        ),
       },
     );
     connectors['recipes'] = _i1.EndpointConnector(
@@ -85,7 +143,44 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['recipes'] as _i3.RecipesEndpoint).getRecipes(session),
         ),
+        'deleteRecipe': _i1.MethodConnector(
+          name: 'deleteRecipe',
+          params: {
+            'recipeId': _i1.ParameterDescription(
+              name: 'recipeId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recipes'] as _i3.RecipesEndpoint).deleteRecipe(
+            session,
+            params['recipeId'],
+          ),
+        ),
+        'generateRecipe2': _i1.MethodConnector(
+          name: 'generateRecipe2',
+          params: {
+            'ingredients': _i1.ParameterDescription(
+              name: 'ingredients',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recipes'] as _i3.RecipesEndpoint).generateRecipe2(
+            session,
+            params['ingredients'],
+          ),
+        ),
       },
     );
+    modules['serverpod_auth'] = _i4.Endpoints()..initializeEndpoints(server);
   }
 }

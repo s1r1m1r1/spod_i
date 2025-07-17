@@ -8,6 +8,9 @@ environment:
 
 dependencies:
   serverpod: 2.9.1
+  meta: ^1.17.0
+  google_generative_ai: ^0.3.0
+  serverpod_auth_server: 2.9.1 # Make sure this matches your Serverpod version
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
